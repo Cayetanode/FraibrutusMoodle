@@ -12,7 +12,6 @@
 *             Manuel Jimenez Maya.
 *             Antonio Moreno Amaya.
 *             Basilia Moreno Muñoz.
-*             Cayetano De Juan Ubeda.
 *
 ************************************************************************************
 """
@@ -41,6 +40,9 @@ params=parser.parse_args()
 Url=params.Url
 Usuario=params.Usuario
 Dic=params.Dic
+
+
+Url=Url + "/login/index.php"
 
 print ("\n")
 print ("\n")
